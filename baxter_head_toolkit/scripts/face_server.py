@@ -31,8 +31,10 @@ class FaceServer:
         rospack = rospkg.RosPack()
         self._pack_path = rospack.get_path(PACKAGE_NAME)
         self._base_path = os.path.join(self._pack_path,'res') #Which folder the images are located
-
+        
+        self._send_image(os.path.join(self._base_path,"baxter_standard.png"))
         rospy.loginfo("action server: faceEmotion started")
+    
 
 
     def _send_image(self, path):

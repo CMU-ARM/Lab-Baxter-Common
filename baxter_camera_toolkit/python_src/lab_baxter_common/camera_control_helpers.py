@@ -246,6 +246,6 @@ class CameraController(object):
         try:
             resp = closeService(camera)
             if resp.err != 0:
-                raise OSError("error closing %s: %d" % (camera, resp))
+                raise OSError("error closing {}: {}".format(camera, resp))
         except rospy.ServiceException as err:
             raise OSError("error closing %s: %d" % (camera, err))

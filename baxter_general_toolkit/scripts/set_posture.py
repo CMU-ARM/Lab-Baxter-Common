@@ -17,13 +17,13 @@ def move_to_posture(posture_name):
     #3) Read it from a file instead of hardcoding it
 
     claw_pose_left = {
-        left_w0: 0.2446699356677235,
-        left_w1: 0.7531845668517382,
-        left_w2: 0.034514567727421806,
-        left_e0: -0.3236699462438223,
-        left_e1: 1.8795099603566032,
-        left_s0: -0.2899223689103432,
-        left_s1: -1.026616642292313 
+        "left_w0": 0.2446699356677235,
+        "left_w1": 0.7531845668517382,
+        "left_w2": 0.034514567727421806,
+        "left_e0": -0.3236699462438223,
+        "left_e1": 1.8795099603566032,
+        "left_s0": -0.2899223689103432,
+        "left_s1": -1.026616642292313 
     }
 
     rospy.init_node("bax_set_posture")

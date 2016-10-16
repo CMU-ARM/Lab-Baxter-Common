@@ -208,13 +208,13 @@ class CameraController(object):
         cameraToClose = None
         if camera2 is None:
             if not streamingCameras[camera] and numPoweredCameras >= 2:
-                for cam in CameraController._validCameras:
+                for cam, on in poweredCameras.iteritems():
                     if cam != camera:
                         cameraToClose = cam
                         break
         else:
             if numDesiredCameraStreaming < numPoweredCameras:
-                for cam in CameraController._validCameras:
+                for cam, on in poweredCameras.iteritems():
                     if cam != camera and cam != camera2:
                         cameraToClose = cam
                         break

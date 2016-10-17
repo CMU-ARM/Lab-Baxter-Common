@@ -1,7 +1,10 @@
+#!/usr/bin/env python
 import rospy
 import rosgraph
 import socket
 import time
+import errno
+import os
 
 from baxter_core_msgs.srv import OpenCamera
 from baxter_core_msgs.srv import CloseCamera
@@ -37,7 +40,7 @@ class CameraController(object):
             for cam in resp.cameras:
                 poweredCameras[cam] = True
         except rospy.ServiceException as err:
-            raise OSError("error listing cameras: %d" % err)
+            raise OSError("error listing cameras: {}".format(err))
 
         # NOTE (amal): it turns out to be unnecessary to know the streamingCameras
         # given how Baxter RSDK 1.1 works.  Read the Readme for more details.
@@ -177,20 +180,20 @@ class CameraController(object):
         """
         # Check that cameras are valid
         if camera not in CameraController._validCameras:
-            raise ValueError('invalid camera %s, valid cameras are %s' % (camera, str(CameraController._validCameras)))
+            raise ValueError('invalid camera {}, valid cameras are{}s'.format(camera, str(CameraController._validCameras)))
         if camera2 is not None and camera2 not in CameraController._validCameras:
-            raise ValueError('invalid camera2 %s, valid cameras are %s' % (camera2, str(CameraController._validCameras)))
+            raise ValueError('invalid camera2 {}, valid cameras are {}'.format(camera2, str(CameraController._validCameras)))
 
         # Check that the settings are valid
         if settings is not None:
             ok, err =  CameraController._isValidCameraSettings(settings)
-            if not ok: raise ValueError("invalid settings: %s", err)
+            if not ok: raise ValueError("invalid settings: {}".format(err))
         else:
             settings = CameraController._getDefaultSettings()
         CameraController._addDefaultValues(camera, settings)
         if settings2 is not None:
             ok, err =  CameraController._isValidCameraSettings(settings2)
-            if not ok: raise ValueError("invalid settings2: %s", err)
+            if not ok: raise ValueError("invalid settings2: {}".format(err))
         else:
             settings2 = CameraController._getDefaultSettings()
         CameraController._addDefaultValues(camera2, settings2)
@@ -226,17 +229,17 @@ class CameraController(object):
         openService = rospy.ServiceProxy('cameras/open', OpenCamera)
         try:
             resp = openService(camera, settings)
-            if resp.err != 0:
-                raise OSError("error turning on %s: %d" % (camera, resp))
+            if resp.err != 0 and resp.err != errno.EINVAL:
+                raise OSError("error opening {}: {}".format(camera, os.strerror(resp.err)))
         except rospy.ServiceException as err:
-            raise OSError("error turning on %s: %d" % (camera, err))
+            raise OSError("error opening {}: {}".format(camera, err))
         if camera2 is not None and camera2 != camera:
             try:
                 resp = openService(camera2, settings2)
-                if resp.err != 0:
-                    raise OSError("error opening %s: %d" % (camera2, resp))
+                if resp.err != 0 and resp.err != errno.EINVAL:
+                    raise OSError("error opening {}: {}".format(camera2, os.strerror(resp.err)))
             except rospy.ServiceException as err:
-                raise OSError("error opening %s: %d" % (camera2, err))
+                raise OSError("error opening {}: {}".format(camera2, os.strerror(resp.err)))
 
 
     @staticmethod
@@ -245,7 +248,13 @@ class CameraController(object):
         closeService = rospy.ServiceProxy('cameras/close', CloseCamera)
         try:
             resp = closeService(camera)
-            if resp.err != 0:
-                raise OSError("error closing {}: {}".format(camera, resp))
+            if resp.err != 0 and resp.err != errno.EINVAL:
+                raise OSError("error closing {}: {}".format(camera, os.strerror(resp.err)))
         except rospy.ServiceException as err:
-            raise OSError("error closing %s: %d" % (camera, err))
+            raise OSError("error closing {}: {}".format(camera, err))
+
+# Sample Usage
+if __name__ == '__main__':
+    settings = CameraController.createCameraSettings(width=640, height=400, exposure=-1) # settings for the first camera
+    settings2 = CameraController.createCameraSettings(width=1280, height=800, exposure=-1) # settings for the second camera
+    CameraController.openCameras("head_camera", "right_hand_camera", settings=settings, settings2=settings2)

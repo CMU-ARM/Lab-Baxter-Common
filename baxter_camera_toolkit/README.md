@@ -32,8 +32,12 @@ This script defines three static methods that are available to the user:
 from lab_baxter_common.camera_control_helpers import CameraController
 
 if __name__ == '__main__':
-    settings=CameraController.createCameraSettings(width=640, height=400, exposure=-1)
-    CameraController.openCameras("head_camera", "right_hand_camera", settings=settings)
+  # settings for the first camera
+  settings = CameraController.createCameraSettings(width=640, height=400, exposure=-1)
+  # settings for the second camera
+  settings2 = CameraController.createCameraSettings(width=1280, height=800, exposure=-1)
+  # turn the cameras on
+  CameraController.openCameras("head_camera", "right_hand_camera", settings=settings, settings2=settings2)
 ```
 
 ### Notes

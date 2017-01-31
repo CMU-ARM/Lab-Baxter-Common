@@ -1,0 +1,3 @@
+<launch>
+	<node name="face_server" pkg="baxter_head_toolkit" type="face_server.py"/>
+</launch>	

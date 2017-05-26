@@ -6,7 +6,7 @@ Tool that use to set Baxter into different modes
 """
 
 import argparse
-# import baxter_interface
+import baxter_interface
 
 
 def move_to_posture(posture_name):
@@ -26,7 +26,7 @@ def move_to_posture(posture_name):
         "left_s1": -1.026616642292313 
     }
 
-    rospy.init_node("bax_set_posture")
+    #rospy.init_node("bax_set_posture")
     left_limb = baxter_interface.Limb('left')
     right_limb = baxter_interface.Limb('right')
 

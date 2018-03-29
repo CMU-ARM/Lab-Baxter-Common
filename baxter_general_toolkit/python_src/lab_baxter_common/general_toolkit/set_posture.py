@@ -7,7 +7,17 @@ Tool that use to set Baxter into different modes
 
 import argparse
 import baxter_interface
+from ik_solver import solve_IK
 
+def move_arm_to_pose(limb_name, pose):
+    #create the baxter interface 
+    limb_interface = baxter_interface.Limb(limb_name)
+    #do IK to solve the position
+    joint_position = solve_IK(limb_name, pose)
+    #zip the name and positions
+    joint_position = dict(zip(joint_position.name, joint_position.position))
+    #move the limb to the position
+    limb_interface.move_to_joint_positions(joint_position)
 
 def move_to_posture(posture_name):
 

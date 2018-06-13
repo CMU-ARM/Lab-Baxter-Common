@@ -1,0 +1,3 @@
+<launch>
+		<node pkg="baxter_general_toolkit" name="server" type="server.py" output="screen"/>
+</launch>

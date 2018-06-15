@@ -30,10 +30,8 @@ class CameraNode:
     def __init__(self):
         self._head_sub = rospy.Subscriber('/cameras/head_camera/image', Image, self._head_cb, queue_size=1)
         self._head_pub = rospy.Publisher('temporary', HeadPanCommand, queue_size=2)
-        #self._pause_sub = rospy.Subscriber('pause', Bool, self._pause_cb, queue_size=1)
         self._msg = HeadPanCommand()
         self._last_image = None
-        #self._last_pause = None
         self._settings = CameraController.createCameraSettings(width=1280, height=800, exposure=-1)
         CameraController.openCameras("head_camera", settings=self._settings)
 
@@ -214,14 +212,18 @@ class CameraNode:
                                         cv2.FONT_HERSHEY_SIMPLEX,
                                         0.5, (255, 255, 255), 2)
                 
+                # get pause signal as ros parameter (boolean)
                 pause = rospy.get_param('pause')                    
-                length = len(self.faceTrackers)                    
+                length = len(self.faceTrackers)  
+                                  
                 if length != 0 and pause == False:
+                    # calculate average of face positions
                     avg = 0
                     for x in self.faceTrackers.keys():
                         avg += self.faceTrackers[x].get_position().left()
                     avg /= length
-                
+                    
+                    # send pan movement message via the 'temporary' topic
                     self._msg.enable_pan_request = 1
                     self._msg.speed_ratio = 1.0
                     if avg < 400:
@@ -233,7 +235,8 @@ class CameraNode:
                     elif avg > 700:
                         self._msg.target = head.pan() - 0.14
                     self._head_pub.publish(self._msg)
-                                           
+                
+                # display resulting image on computer and baxter face                           
                 largeResult = cv2.resize(resultImage, (OUTPUT_SIZE_WIDTH,OUTPUT_SIZE_HEIGHT))
                 alternate = cv_bridge.CvBridge().cv2_to_imgmsg(largeResult, encoding='bgr8')
                 
@@ -241,6 +244,7 @@ class CameraNode:
                 pub = rospy.Publisher('/robot/xdisplay', Image, queue_size=2)
                 pub.publish(alternate)
                 
+                # 'q' is escape key
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break
                 

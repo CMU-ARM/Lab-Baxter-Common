@@ -6,6 +6,10 @@ A collection of baxter code that can be shared between projects
     - Given a name of the posture, move baxter to that posture 
 - `solve_ik(arm_name, pose)`
     - Given the arm and pose (stamped or not), converts that pose into joint_states message that move to that pose
+- `CameraNode().detect()`
+    - detect and track facial movement from head camera
+- `record()/playback()`
+    - record and playback baxter arm joint trajectories
 
 ### lab_baxter_common.camera_toolkit
 Wrapper to open baxter camera

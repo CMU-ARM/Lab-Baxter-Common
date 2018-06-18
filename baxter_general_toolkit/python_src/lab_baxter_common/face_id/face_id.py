@@ -30,8 +30,7 @@ class CameraNode:
         self._head.resolution = (1280, 800)
     def _head_cb(self, msg):
         self._last_image = msg
-    def detect(self):
-          
+    def detect(self):  
         while True:
             # Capture frame-by-frame
             if self._last_image != None:
@@ -78,7 +77,7 @@ class CameraNode:
                 
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break
-        
+
         # When everything is done, release the capture
         video_capture.release()
         cv2.destroyAllWindows()

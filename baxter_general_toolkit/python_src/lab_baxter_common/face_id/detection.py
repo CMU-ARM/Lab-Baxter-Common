@@ -13,7 +13,7 @@ import rospkg
 import os
 from baxter_interface import CHECK_VERSION
 from lab_baxter_common.camera_toolkit.camera_control_helpers import CameraController
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, Int32
 from sensor_msgs.msg import Image
 from baxter_core_msgs.msg import HeadPanCommand
 
@@ -30,6 +30,8 @@ class CameraNode:
     def __init__(self):
         self._head_sub = rospy.Subscriber('/cameras/head_camera/image', Image, self._head_cb, queue_size=1)
         self._head_pub = rospy.Publisher('temporary', HeadPanCommand, queue_size=2)
+        self._people_pub = rospy.Publisher('people', Int32, queue_size=2)
+        self._people = Int32()
         self._msg = HeadPanCommand()
         self._last_image = None
         self._settings = CameraController.createCameraSettings(width=1280, height=800, exposure=-1)
@@ -180,8 +182,6 @@ class CameraNode:
                         self.currentFaceID += 1
 
 
-
-
                     #Now loop over all the trackers we have and draw the rectangle
                     #around the detected faces. If we 'know' the name for this person
                     #(i.e. the recognition thread is finished), we print the name
@@ -214,7 +214,9 @@ class CameraNode:
                 
                 # get pause signal as ros parameter (boolean)
                 pause = rospy.get_param('pause')                    
-                length = len(self.faceTrackers)  
+                length = len(self.faceTrackers)
+                self._people.data = length
+                self._people_pub.publish(self._people) 
                 
                 # comment out three lines below if you want to only pause and run another script
                 # otherwise this ends the current call of detect so other functions can
@@ -222,7 +224,7 @@ class CameraNode:
                 if pause == True:
                     rospy.set_param('pause', 'false')
                     break
-                                  
+                                                   
                 if length != 0 and pause == False:
                     # calculate average of face positions
                     avg = 0

@@ -215,6 +215,12 @@ class CameraNode:
                 # get pause signal as ros parameter (boolean)
                 pause = rospy.get_param('pause')                    
                 length = len(self.faceTrackers)  
+                
+                # comment out two lines below if you want to only pause and run another script
+                # otherwise this ends the current call of detect so other functions can
+                # run within the same script
+                if pause == True:
+                    break
                                   
                 if length != 0 and pause == False:
                     # calculate average of face positions

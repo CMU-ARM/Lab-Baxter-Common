@@ -10,7 +10,5 @@ if __name__ == '__main__':
     ps = PollySpeech()
     cn.detect()
     ps.speak("Hello, I am taking a break!")
-    while True:
-        if rospy.get_param("pause") == False:
-            break
+    rospy.set_param('pause', 'false')
     cn.detect()

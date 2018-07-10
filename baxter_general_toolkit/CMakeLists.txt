@@ -7,11 +7,15 @@ project(baxter_general_toolkit)
 find_package(catkin REQUIRED COMPONENTS
   actionlib
   actionlib_msgs
-  baxter_core_msgs
   baxter_interface
+  genmsg
   roscpp
   rospy
+  dynamic_reconfigure
   std_msgs
+  trajectory_msgs
+  baxter_core_msgs
+  control_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -69,10 +73,10 @@ catkin_python_setup()
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   actionlib_msgs#   baxter_core_msgs#   std_msgs
-# )
+ #generate_messages(
+ #  DEPENDENCIES
+ #  actionlib_msgs#   baxter_core_msgs#   std_msgs
+ #)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -89,10 +93,12 @@ catkin_python_setup()
 ##     and list every .cfg file to be processed
 
 ## Generate dynamic reconfigure parameters in the 'cfg' folder
-# generate_dynamic_reconfigure_options(
-#   cfg/DynReconf1.cfg
-#   cfg/DynReconf2.cfg
-# )
+generate_dynamic_reconfigure_options(
+   cfg/Settings.cfg
+   cfg/PositionFFJointTrajectoryActionServer.cfg
+   cfg/PositionJointTrajectoryActionServer.cfg
+   cfg/VelocityJointTrajectoryActionServer.cfg
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -106,7 +112,7 @@ catkin_python_setup()
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES baxter_general_toolkit
-#  CATKIN_DEPENDS actionlib actionlib_msgs baxter_core_msgs baxter_interface roscpp rospy std_msgs
+  CATKIN_DEPENDS actionlib actionlib_msgs genmsg roscpp rospy std_msgs dynamic_reconfigure trajectory_msgs control_msgs baxter_interface
 #  DEPENDS system_lib
 )
 

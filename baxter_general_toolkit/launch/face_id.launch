@@ -1,0 +1,4 @@
+<launch>
+		<node pkg="baxter_general_toolkit" name="mover" type="mover.py" output="screen"/>
+		<param name="pause" type="bool" value="False" />
+</launch>

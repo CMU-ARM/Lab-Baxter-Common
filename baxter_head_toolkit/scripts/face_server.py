@@ -37,7 +37,7 @@ class FaceServer:
         self._process_files()
         rospy.loginfo("action server: faceEmotion started")
 
-        self._cur_emotions = 'sleep'
+        self._cur_emotions = 'happy'
         self._cur_index = 0
         self._max_index = self._emotions[self._cur_emotions]+1
         

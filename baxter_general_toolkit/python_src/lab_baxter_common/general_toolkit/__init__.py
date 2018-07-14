@@ -1,2 +1,2 @@
-from .set_posture import move_to_posture
+from .set_posture import *
 from .ik_solver import solve_IK

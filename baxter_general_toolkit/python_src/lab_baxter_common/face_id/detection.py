@@ -74,7 +74,7 @@ class CameraNode:
         head = baxter_interface.Head()
         head.set_pan(0)
         try:
-            while True:
+            while not rospy.is_shutdown():
                 # Capture frame-by-frame
                 if self._last_image != None:
                     frame = cv_bridge.CvBridge().imgmsg_to_cv2(self._last_image, desired_encoding='bgr8')

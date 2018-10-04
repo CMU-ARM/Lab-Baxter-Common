@@ -11,7 +11,8 @@ import argparse
 import baxter_interface
 import yaml
 from ik_solver import solve_IK
-
+import threading
+import alloy.ros
 
 def move_arm_to_pose(limb_name, pose):
     #create the baxter interface 
@@ -23,25 +24,32 @@ def move_arm_to_pose(limb_name, pose):
     #move the limb to the position
     limb_interface.move_to_joint_positions(joint_position)
 
-def move_to_posture(posture_name):
+def move_to_posture(posture_name, record_path="posture_records.yaml"):
 
     #rospy.init_node("bax_set_posture")
     left_limb = baxter_interface.Limb('left')
     right_limb = baxter_interface.Limb('right')
 
-    if os.path.exists('posture_records.yaml'):
-        with open('posture_records.yaml','r') as f:
+    #resolve path
+    record_path = alloy.ros.resolve_res_path(record_path,"baxter_general_toolkit")
+
+    if record_path:
+        with open(record_path,'r') as f:
             posture_list = yaml.load(f)
             joint_angles = posture_list[posture_name]
             if 'left' in joint_angles and 'right' in joint_angles:
-                left_limb.move_to_joint_positions(joint_angles['left'])    
-                right_limb.move_to_joint_positions(joint_angles['right'])
+                lt = threading.Thread(target=left_limb.move_to_joint_positions, args=(joint_angles['left'],))
+                rt = threading.Thread(target=right_limb.move_to_joint_positions, args=(joint_angles['right'],))
+                lt.start()
+                rt.start()
+                lt.join()
+                rt.join()
             elif 'left' in joint_angles:   
                 left_limb.move_to_joint_positions(joint_angles['left'])  
             elif 'right' in joint_angles:
                 right_limb.move_to_joint_positions(joint_angles['right'])
 
-def save_posture(posture_name, arm=None):
+def save_posture(posture_name, arm=None, record_path="posture_records.yaml"):
 
     left_nav = baxter_interface.Navigator('left')
     right_nav = baxter_interface.Navigator('right')
@@ -54,11 +62,15 @@ def save_posture(posture_name, arm=None):
     right_joint_angles = baxter_interface.Limb('right').joint_angles()
 
     posture_list = dict()
-    #save them to some type of files
-    if not os.path.exists('posture_records.yaml'):
-        yaml.dump(posture_list,file('posture_records.yaml','w'))
 
-    with open('posture_records.yaml','rw') as f:
+    #resolve path
+    record_path = alloy.ros.resolve_res_path(record_path,"baxter_general_toolkit")
+
+    #save them to some type of files
+    if not os.path.exists(record_path):
+        yaml.dump(posture_list,file(record_path,'w'))
+
+    with open(record_path,'rw') as f:
         posture_list = yaml.load(f)
         if arm == 'right':
             posture_list[posture_name] = {
@@ -74,7 +86,7 @@ def save_posture(posture_name, arm=None):
                 'right': right_joint_angles
             }
 
-    yaml.dump(posture_list, file('posture_records.yaml','w'))
+    yaml.dump(posture_list, file(record_path','w'))
 
 
     

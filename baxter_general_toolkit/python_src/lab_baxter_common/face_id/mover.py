@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
-
+from baxter_interface import RobotEnable
 from baxter_core_msgs.msg import(
     HeadPanCommand
 )
@@ -12,11 +12,13 @@ class Publish:
         self.pub = rospy.Publisher('/robot/head/command_head_pan', HeadPanCommand, queue_size=2)
         self.sub = rospy.Subscriber('/temporary', HeadPanCommand, self._cb, queue_size=1)
         self._last_msg = None
+        self._robot = RobotEnable()
         
     def _cb(self, msg):
         self._last_msg = msg
         
     def execute(self):
+        self._robot.enable()
         while not rospy.is_shutdown():
             if self._last_msg != None:
                 # get message from 'temporary' topic
@@ -30,10 +32,14 @@ class Publish:
                     msg.speed_ratio = (-3.4055831149*(10**-12))*(x**5)+(1.2685088515*(10**-9))*(x**4)+(2.1635717468*(10**-7))*(x**3)+(-0.00018699145565)*(x**2)+(0.0248928770417)*x+(0.000107467879942)
                     self.pub.publish(msg) 
                     x += 1
+
+    def shutdown(self):
+        self._robot.disable()
                 
 if __name__ == '__main__':
     rospy.init_node('mover')
     pb = Publish()
+    rospy.on_shutdown(pb.shutdown)
     pb.execute()
     
 

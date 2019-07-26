@@ -6,6 +6,7 @@ import baxter_interface
 import rospkg
 import rospy
 import os
+import time
 import actionlib
 from dynamic_reconfigure.server import Server
 from baxter_interface import CHECK_VERSION
@@ -42,14 +43,7 @@ def record(filename, rate=100.0):
     recorder.record()
 
 
-def playback(filename, loops=0):
-    while loops < 1:
-        loops = int(raw_input("How many times should the playback loop? "))
-        
-    rospack = rospkg.RosPack()
-    ros_package = raw_input("In which ros package is your library? ")
-    filepath = os.path.join(rospack.get_path(ros_package), "playback_library/" + filename)
-    
+def playback(filepath, loops=0):
     if not Path(filepath).is_file():
         print("Cannot playback! File doesn't exist!")
         
@@ -80,7 +74,7 @@ if __name__ == '__main__':
 
 	# get directory path
     rospack = rospkg.RosPack()
-    path = os.path.join(rospack.get_path("lab_common"), "playback_library/" + filename)
+    path = os.path.join(rospack.get_path("baxter_general_toolkit"), "playback_library/" + filename)
     
     # initialize node
     print("Initializing node... ")
@@ -89,9 +83,9 @@ if __name__ == '__main__':
     if Path(path).is_file():
         print("File already exists. Can only playback.")
         loop_count = int(raw_input("How many times would you like to loop playback? "))
-        while not loop_count < 0 :
+        while loop_count < 0:
             loop_count = int(raw_input("How many times would you like to loop playback? "))
-        playback("both", 100.0, "velocity", path, loop_count)
+        playback(path, loops=loop_count)
     else:
     	print("File does not exist. Must at least record.")
 
@@ -104,11 +98,12 @@ if __name__ == '__main__':
             loop_count = int(raw_input("How many times would you like to loop playback? "))
             while loop_count < 0:
                 loop_count = int(raw_input("How many times would you like to loop playback? "))
+                print loop_count
         if command in R or command in B:
             record(path, 100.0)
         if command in B:
             rospy.sleep(2)
-            playback("both", 100.0, "velocity", path, loop_count)
+            playback(path, loops=loop_count)
 
     # cleanup and shutdown
     os.system("rosnode cleanup")

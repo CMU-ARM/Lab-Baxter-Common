@@ -398,9 +398,9 @@ class JointRecorder(object):
                 f.write('right_gripper\n')
 
                 while not self.done():
-                    if self._last_left.buttons[0]:
+                    if self._last_left is not None and self._last_left.buttons[0]:
                         self._left_done = True
-                    if self._last_right.buttons[0]:
+                    if self._last_right is not None and self._last_right.buttons[0]:
                         self._right_done = True
                 		
                     # Look for gripper button presses

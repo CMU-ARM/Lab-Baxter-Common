@@ -32,7 +32,6 @@ import rospy
 import baxter_interface
 from baxter_core_msgs.msg import NavigatorState
 from baxter_interface import CHECK_VERSION
-from lab_polly_speech import PollySpeech
 
 class JointRecorder(object):
     def __init__(self, filename, rate):
@@ -61,8 +60,6 @@ class JointRecorder(object):
         self._last_right = None
         self._left_done = False
         self._right_done = False
-
-        self._speech = PollySpeech()
 		 
         # Verify Grippers Have No Errors and are Calibrated
         if self._gripper_left.error():
@@ -112,12 +109,11 @@ class JointRecorder(object):
         #only start recording after either of the up buttons has been pressed
         if not start:
             while not rospy.is_shutdown():
-                if (self._last_left != None and self._last_left.buttons[1]) or self._last_right.buttons[1]:
+                if (self._last_left != None and self._last_left.buttons[1]) or (self._last_right != None and self._last_right.buttons[1]):
                     break
                 rospy.sleep(0.1)
 
         if self._filename:
-            self._speech.speak('Starting Joint Trajectory Recording')
             rospy.loginfo('Start Recording Trajectory to {}'.format(self._filename))            
             joints_left = self._limb_left.joint_names()
             joints_right = self._limb_right.joint_names()
@@ -157,4 +153,4 @@ class JointRecorder(object):
                     f.write(str(self._gripper_right.position()) + '\n')
 
                     self._rate.sleep()
-                self._speech.speak('Stopping Joint Trajectory Recording')
+                rospy.loginfo('Stopping Joint Trajectory Recording')

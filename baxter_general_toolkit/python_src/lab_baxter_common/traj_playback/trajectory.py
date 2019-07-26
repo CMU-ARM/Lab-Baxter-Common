@@ -5,15 +5,9 @@ from copy import deepcopy, copy
 import threading
 import operator
 import bisect
-
-
 import baxter_interface
 from baxter_interface import CHECK_VERSION
-
-from trajectory_msgs.msg import (
-    JointTrajectoryPoint,
-)
-
+from trajectory_msgs.msg import JointTrajectoryPoint
 from control_msgs.msg import (
     FollowJointTrajectoryAction,
     FollowJointTrajectoryFeedback,
@@ -251,7 +245,7 @@ class Trajectory(object):
         self._right_client.send_goal(self._r_goal, feedback_cb=self._feedback)
         # Syncronize playback by waiting for the trajectories to start
         while not rospy.is_shutdown() and not self._get_trajectory_flag():
-            rospy.sleep(0.05)
+            rospy.sleep(0.05)     
         self._execute_gripper_commands()
 
     def stop(self):

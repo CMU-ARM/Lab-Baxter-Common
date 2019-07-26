@@ -81,13 +81,13 @@ if __name__ == '__main__':
 
 	# get directory path
     rospack = rospkg.RosPack()
-    path = os.path.join(rospack.get_path("baxter_general_toolkit"), "playback_library/" + filename)
+    path = os.path.join(rospack.get_path("baxter_general_toolkit"), "trajectory_playback_library/" + filename)
     
     # initialize node
     print("Initializing node... ")
     rospy.init_node("joint_playback")
     
-    if Path(path).is_file():
+    if os.path.isfile(path):
         print("File already exists. Can only playback.")
         loop_count = int(raw_input("How many times would you like to loop playback? "))
         while loop_count < 0:
